@@ -30,15 +30,17 @@ else
  MONI=z80-mon.exe
 endif
 
-CC=	gcc
+#CC=	gcc
+CC=	cc # is clang in OpenBSD
+MAKE= gmake # GNU make
 CFLAGS=-O2 -Wall -D$(ZZ) -D$(SYSTEM) $(DEFINES) -W -Wstrict-prototypes \
        -Wno-parentheses -fomit-frame-pointer -falign-functions=0
 LDFLAGS=
 
 all:
 	cd hardware; $(MAKE) SYSTEM=$(SYSTEM) DEFINES="-D$(ZZZ) -D$(SYSTEM) $(DEFINES)" hard.a
-	make $(ASM)
-	make $(MONI)
+	$(MAKE) $(ASM)
+	$(MAKE) $(MONI)
 	cd hardware; $(MAKE) SYSTEM=$(SYSTEM) DEFINES="-D$(ZZZ) -D$(SYSTEM) $(DEFINES)"
 
 clean:
@@ -48,7 +50,7 @@ clean:
 	$(RM) asm.a
 	$(RM) cpu.a
 	$(RM) .bus_proto
-	cd hardware; make SYSTEM=$(SYSTEM) clean
+	cd hardware; $(MAKE) SYSTEM=$(SYSTEM) clean
 
 install:
 	chmod a+rx $(ASM) $(MONI); cp -p $(ASM) $(MONI) $(BIN_DIR)
@@ -102,6 +104,8 @@ interrupt.o: interrupt.c z80-cpu.h decode.h z80-mon.h z80-global \
 
 dummy.o: dummy.c
 
+dummy_error.o: dummy_error.c
+
 mini-display.o: mini-display.c console.h console_token
 
 keyboard.o: keyboard.c console.h
@@ -118,6 +122,6 @@ cpu.a: execute.o decode-table.o decode.o memory.o ports.o
 
 
 $(ASM): z80-asm.o dummy.o asm.a $(HW)
-	gcc -lc -o $(ASM) z80-asm.o dummy.o asm.a $(HW)
+	$(CC) -lc -o $(ASM) z80-asm.o dummy.o asm.a $(HW)
 $(MONI): z80-mon.o cpu.a console.o asm.a $(HW)
-	gcc -lc -o $(MONI) z80-mon.o cpu.a console.o asm.a $(HW)
+	$(CC) -lc -o $(MONI) z80-mon.o cpu.a console.o asm.a $(HW)
