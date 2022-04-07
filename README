@@ -5,3 +5,33 @@ mainly forked so that i can freely work with it on OpenBSD
 
 the branch main only contains 2 files (LICENSE & this README)
 the work is the branch named master
+
+Udo Munk (https://www.autometer.de/unix4fun/z80pack/)
+[working with z80pack]
+
+- z80-asm will generate a .z80 file that can be directly loaded to z80-mon
+
+- z80-file(5)
+Data come after address. Data are raw compiled program. Length of data can be
+simply calculated to 'length of file - 10' bytes.
+
+we have to disregard and skip the first 10 bytes
+
+- bin2hex
+there is one in z80pack/s/z80pack/cpmsim/srctools
+$ cd z80pack/s/z80pack/cpmsim/srctools
+$ gmake
+$ gmake install
+
+a bin2hex binary is copied to ${HOME}/bin
+
+bin2hex -i10 float.z80 float.ihex
+
+
+there is also py3-intelhex package
+
+dd if=float.z80 of=float.data bs=1 skip=10
+
+bin2hex.py float.data float.ihex
+
+- the .ihex file can then be loaded to z80pack/z80sim
